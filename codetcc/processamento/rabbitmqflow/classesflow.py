@@ -1,7 +1,7 @@
 import json
 import pika
 from pika.exceptions import ConnectionClosed
-
+import multiprocessing
 
 class Producer:
     def __init__(self, host=None, queue_name=None, control=None):
@@ -15,7 +15,7 @@ class Producer:
             self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.host))
             self.channel = self.connection.channel()
             # definindo a fila
-            self.channel.queue_declare(queue=self.queue_name)
+            self.channel.queue_declare(queue=self.queue_name, durable=True)
         except Exception as e:
             print(e)
 
@@ -62,7 +62,7 @@ class Consumer:
             print("QUEUE NAME: %s" % self.queue_name)
             self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.host, heartbeat_interval=20))
             self.channel = self.connection.channel()
-            self.channel.queue_declare(queue=self.queue_name)
+            self.channel.queue_declare(queue=self.queue_name, durable=True)
             self.channel.basic_consume(self.receiver_message, queue=self.queue_name)
         except Exception as e:
             print(e)

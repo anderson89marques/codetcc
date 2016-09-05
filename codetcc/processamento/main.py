@@ -14,7 +14,7 @@ from codetcc.processamento.processarArquivoGrandesUsuarios import processaGrande
 
 
 #comentar a linha abaixo assim que o processamento terminar.
-#processaLocalidades()
+processaLocalidades()
 #processaBairros()
 #processaCaixaPostal()
 #processaLogradouro()
@@ -23,7 +23,7 @@ from codetcc.processamento.processarArquivoGrandesUsuarios import processaGrande
 #é preciso sempre que for rodar dar stop e start no rabbitmq
 #sudo rabbitmqctl start_app
 #start_consumers_bairros_json(4)
-start_consumers_logradouro_json(4)
+#start_consumers_logradouro_json(6)
 #start_consumers(5)
 #start_consumers_json(5)
 

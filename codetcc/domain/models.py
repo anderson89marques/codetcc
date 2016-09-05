@@ -14,7 +14,7 @@ from sqlalchemy.orm import (
 
 from zope.sqlalchemy import ZopeTransactionExtension
 
-DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
+DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))()  #Para tentar Fazer Funcionar com o multiprocessing
 Base = declarative_base()
 
 
