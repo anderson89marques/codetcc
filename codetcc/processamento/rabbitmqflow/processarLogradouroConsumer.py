@@ -1,8 +1,8 @@
 import json
 import multiprocessing
 
-import transaction
 import threading
+import time
 
 from pika.exceptions import ConnectionClosed
 from sqlalchemy import create_engine
@@ -40,7 +40,7 @@ def createLogradouro(mapAttrs):
     logradouro.localidade_id = localidade_id
     logradouro.bairro_id = bairro_id
 
-    print(logradouro)
+    #print(logradouro)
     # with transaction.manager:
     if logradouro.chaveLogradouro:
         DBSession.add(logradouro)
@@ -48,7 +48,7 @@ def createLogradouro(mapAttrs):
 
 def processaLogradouroForRabbitMqJson(mapa_linhas):
     print("Processando logradouros")
-
+    ini_time = time.clock()
     mapa_linhas = json.loads(mapa_linhas.decode("utf8"))
 
     for ind, linha in enumerate(mapa_linhas["linhas"]):
@@ -63,7 +63,7 @@ def processaLogradouroForRabbitMqJson(mapa_linhas):
     with lock:
         DBSession.commit()
 
-    return json.dumps({'lotes': mapa_linhas['lote']})
+    return {'lotes': mapa_linhas['lote'], 'time': (time.clock() - ini_time)}
 
 
 class TheadConsumer(threading.Thread):
@@ -102,6 +102,7 @@ class ProcessConsumer:
             self.consumer.start_consuming()
         except ConnectionClosed as c:
             print("ConnectionResetError huahuahuiahuia")
+            self.consumer.start_consuming()
             self.run()  # SE DER ERRO DE CONEXÃO RECONECTA-SE
 
 

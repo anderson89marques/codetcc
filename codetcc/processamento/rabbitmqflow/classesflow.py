@@ -3,6 +3,7 @@ import pika
 from pika.exceptions import ConnectionClosed
 import multiprocessing
 
+
 class Producer:
     def __init__(self, host=None, queue_name=None, control=None):
         self.host = host
@@ -16,6 +17,7 @@ class Producer:
             self.channel = self.connection.channel()
             # definindo a fila
             self.channel.queue_declare(queue=self.queue_name, durable=True)
+            self.channel.confirm_delivery()
         except Exception as e:
             print(e)
 
@@ -45,17 +47,18 @@ class Consumer:
         try:
             resp = self.callback(body)  # resposta deve ser json(eu defini assim)
             if resp:  # enviando resposta para a pilha de controle
-                resp = json.loads(resp)
-                # print("RESP: %r" % resp)
-                if not resp.get("ack"):  # Quando o receiver não for o consumer do produtor
-                    resp["name"] = self.control.name
-                    self.control.start_producer()
-                    self.control.send_menssage(msg=json.dumps(resp))
-                    self.control.stop_producer()
+                #resp = json.loads(resp)
+                resp["name"] = self.control.name
+                print("RESP: %r" % resp)
+                #if not resp.get("ack"):  # Quando o receiver não for o consumer do produtor
+                #    resp["name"] = self.control.name
+                    #self.control.start_producer()
+                    #self.control.send_menssage(msg=json.dumps(resp))
+                    #self.control.stop_producer()
                 channel.basic_ack(delivery_tag=method.delivery_tag)
         except ConnectionClosed as c:
-            print("ConnectionResetError huahuahuiahuia")
-            # self.run()
+            print("ConnectionResetError: {}".format(c.__str__()))
+            self.start_consuming()
 
     def connect(self):
         try:
@@ -98,13 +101,6 @@ class ControlProccess:
         self._connect()
         self.consumer.start_consuming()
 
-
-def callback_end_control():
-    pass
-
-
-def callback_process_msg():
-    pass
 
 if __name__ == "__main__":
     #processamento de bairro, lado produtor

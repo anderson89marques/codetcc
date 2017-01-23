@@ -205,7 +205,7 @@ class GrandeUsuario(Base):
             .format(self.sigla, self.chaveGrandeUsuario, self.cep, self.endereco, self.bairro)
 
 
-class Endereco(Base):
+    class Endereco(Base):
     __tablename__ = 'endereco'
 
     id = Column(Integer, primary_key=True)
